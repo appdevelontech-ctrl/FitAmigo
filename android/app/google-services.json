@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "504609072017",
+    "project_id": "dharmaapp-a42be",
+    "storage_bucket": "dharmaapp-a42be.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504609072017:android:9a7016c6a6db068ae67030",
+        "android_client_info": {
+          "package_name": "com.example.dharma_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk_H-IoleIHiWELSBpnQWSs1xNuSWibOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
