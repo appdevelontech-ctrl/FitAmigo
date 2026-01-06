@@ -154,8 +154,7 @@ class FriendsScreen extends StatelessWidget {
                       return SlideTransition(position: offset, child: child);
                     },
                   ));
-            },
-            icon: Icon(
+            },            icon: Icon(
               Icons.search,
               size: isSmall ? 14 : 18,
             ),

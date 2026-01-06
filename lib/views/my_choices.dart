@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/api_service.dart';
-
+import 'package:geocoding/geocoding.dart';
 class StartWorkoutScreen extends StatefulWidget {
   const StartWorkoutScreen({super.key});
 
@@ -18,6 +18,8 @@ class _StartWorkoutScreenState extends State<StartWorkoutScreen> {
 
   double? userLat;
   double? userLng;
+  String? userCity;
+  String? userState;
 
   @override
   void initState() {
@@ -49,16 +51,27 @@ class _StartWorkoutScreenState extends State<StartWorkoutScreen> {
       userLat = pos.latitude;
       userLng = pos.longitude;
 
-      print("✔ GOT LOCATION: LAT = $userLat | LNG = $userLng");
+// 🔥 Reverse Geocoding: Lat/Lng → City & State
+      List<Placemark> placemarks = await placemarkFromCoordinates(userLat!, userLng!);
+      Placemark place = placemarks.first;
+
+      userCity = place.locality ?? "";
+      userState = place.administrativeArea ?? "";
+
+      print("🏙 City = $userCity");
+      print("🛣 State = $userState");
 
       await _fetchGyms();
+
 
     } catch (e) {
       print("❌ Location Error: $e");
     }
-  }Future<void> _fetchGyms() async {
-    if (userLat == null || userLng == null) {
-      print("❌ ERROR: Lat/Lng missing");
+  }
+
+  Future<void> _fetchGyms() async {
+    if (userLat == null || userLng == null || userCity == null || userState == null) {
+      print("❌ Missing Location or City/State");
       return;
     }
 
@@ -66,43 +79,32 @@ class _StartWorkoutScreenState extends State<StartWorkoutScreen> {
 
     try {
       final api = ApiService();
-
-      // Load department safely
       final deps = await api.getDepartments();
 
       if (deps.isEmpty) {
-        print("❌ No department returned!");
         gyms.value = [];
         return;
       }
 
       final departmentId = deps.first.id;
 
-      // Call nearby API
       final result = await api.getNearbyGyms(
         lat: userLat!,
         lng: userLng!,
+        state: userState!,
+        city: userCity!,
         departmentId: departmentId,
       );
 
-      print("\n🟣 RAW API RESULT:");
-      print(const JsonEncoder.withIndent("  ").convert(result));
-
-      final friends = result["friends"];
-
-      if (friends == null) {
-        print("⚠ Backend returned NULL for friends");
-        gyms.value = [];
-      } else {
-        gyms.value = List.from(friends);
-      }
+      gyms.value = result["friends"] ?? [];
 
     } catch (e) {
-      print("❌ API Fetch Error: $e");
+      print("❌ API Error: $e");
     } finally {
       isLoading.value = false;
     }
   }
+
 
 
 

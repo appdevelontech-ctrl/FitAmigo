@@ -375,28 +375,30 @@ print("Response is : ${response.body}");
   Future<Map<String, dynamic>> getNearbyGyms({
     required double lat,
     required double lng,
+    required String state,
+    required String city,
     required String departmentId,
   }) async {
 
     final userId = await getUserId();
 
     print("\n🔥 FETCHING NEARBY GYMS (DYNAMIC)");
+    print("state = $state");
+    print("city = $city");
     print("lat = $lat");
     print("lng = $lng");
     print("departmentId = $departmentId");
-    print("userId = $userId");
 
-    // BUILD DYNAMIC URL
-    final url =
-        "$baseUrl/get-all-listing"
-        "?state=Delhi"
-        "&city=New+Delhi"
+    // 🔥 BUILD DYNAMIC NEARBY URL
+    final url = "$baseUrl/get-all-listing"
+        "?state=$state"
+        "&city=$city"
         "&department=$departmentId"
         "&subDepartment="
         "&page=1"
         "&limit=50"
-        "&lat="
-        "&lng="
+        "&lat=$lat"
+        "&lng=$lng"
         "&Distance=5"
         "&userId=$userId";
 
@@ -405,8 +407,7 @@ print("Response is : ${response.body}");
     try {
       final response = await getApi(url);
 
-      print("🎯 API Parsed Response: ${response["friends"]?.length ?? 0} gyms found");
-
+      print("🎯 Found: ${response["friends"]?.length ?? 0} gyms");
       return response;
 
     } catch (e) {
@@ -414,6 +415,7 @@ print("Response is : ${response.body}");
       return {"success": false, "message": e.toString()};
     }
   }
+
 
 
 
